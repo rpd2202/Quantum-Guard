@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Received Messages</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Initialize an empty array to store messages
+        var messagesArray = [];
+
+        // Function to update the HTML to display the messages array
+        function updateMessageList() {
+            var messagesList = document.getElementById('messages-list');
+            messagesList.innerHTML = '';
+
+            messagesArray.forEach(function (message) {
+                var li = document.createElement('li');
+                li.textContent = message;
+                messagesList.appendChild(li);
+            });
+        }
+
+        // Function to fetch new messages using AJAX
+        function fetchNewMessages() {
+            
+            var receivedMessage = document.getElementById('hidden-message').textContent;
+            console.log(messagesArray);
+            if(receivedMessage === messagesArray[-1]){
+                
+                messagesArray.push(receivedMessage);    
+                console.log(messagesArray);
+                updateMessageList();
+            }
+            
+            
+            location.reload();            
+        }
+
+        function reqReload() {
+            location.reload();
+        }
+
+        // Poll for new messages every 5 seconds (adjust the interval as needed)
+        setInterval(fetchNewMessages, 5000);
+
+        // Initial fetch of messages
+        //fetchNewMessages();
+        
+    </script>
+</head>
+<body>
+    <h1>Received Messages</h1>
+    {% csrf_token %}
+    <ul id="messages-list">
+        <!-- Messages will be displayed here -->
+    </ul>
+    
+    <div id="hidden-message">{{ received_messages }}</div>
+    
+</body>
+</html>

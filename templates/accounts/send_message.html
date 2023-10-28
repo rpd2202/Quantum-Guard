@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quantum Guard</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .chat-container {
+            max-width: 1040px;
+            margin: 20px auto;
+            background-color: #000;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .chat-header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+        }
+        .chat-messages {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .message {
+            margin-bottom: 15px;
+        }
+        .user-message, .receiver-message {
+            max-width: 70%;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: #fff;
+            float: right;
+            clear: both;
+        }
+        .receiver-message {
+            background-color: #f2f2f2;
+            float: left;
+            clear: both;
+        }
+        .message-input {
+            padding: 10px;
+            width: 80%;
+            border-radius: 25px;
+            margin-right: 10px;
+        }
+        .send-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .send-button:hover {
+            background-color: #0056b3;
+        }
+        .message-input-container {
+            padding: 20px;
+            display: flex;
+        }
+
+        @media screen and (max-width: 1040px) {
+            .chat-container {
+                max-width: 500px;
+                margin: 20px auto;
+                background-color: #000;
+                border-radius: 10px;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Quantum Guard</h1>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+
+        </div>
+        <form id="message-form" method="POST">
+            {% csrf_token %}
+            <div class="message-input-container">
+                <input type="text" id="message-input" name="message" class="message-input" placeholder="Type your message">
+                <button type="submit" class="send-button">Send</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // JavaScript to handle form submission and message display
+        document.addEventListener("DOMContentLoaded", function () {
+            const messageForm = document.getElementById("message-form");
+            const messageInput = document.getElementById("message-input");
+            const chatMessages = document.getElementById("chat-messages");
+
+            messageForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const messageText = messageInput.value.trim();
+
+                function sendToDjango(messageText) {
+                    // Create an XMLHttpRequest object
+                    const xhr = new XMLHttpRequest();
+        
+                    // Define the URL of your Django view
+                    const url = "/send_message/";
+        
+                    // Configure the AJAX request
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}"); // Replace with your actual CSRF token
+        
+                    // Define the data to send
+                    const data = JSON.stringify({ message: messageText });
+        
+                    // Set the callback function for when the request is complete
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            // Handle the response from the Django view if needed
+                            console.log(xhr.responseText);
+                        }
+                    };
+        
+                    // Send the AJAX request
+                    xhr.send(data);
+                }
+        
+
+                if (messageText !== "") {
+                    // Create a new message element for the sender's message
+                    const userMessage = document.createElement("div");
+                    userMessage.className = "message user-message";
+                    userMessage.textContent = messageText;
+                    sendToDjango(messageText);
+
+                    
+                    // Append the sender's message to the chat messages container
+                    chatMessages.appendChild(userMessage);
+
+                    // Clear the input field
+                    messageInput.value = "";
+
+                    // Optionally, you can send the message to the server here for further processing
+
+                    // Scroll to the bottom of the chat messages to display the latest message
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

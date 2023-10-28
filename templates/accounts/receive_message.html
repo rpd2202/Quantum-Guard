@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .message-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #000;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+        }
+        #hidden-message {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+            font-size: 1.4rem;
+        }
+    </style>
+
+    <title>Received Messages</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        var messagesArray = [];
+
+        function updateMessageList() {
+            var messagesList = document.getElementById('messages-list');
+            messagesList.innerHTML = '';
+
+            messagesArray.forEach(function (message) {
+                var li = document.createElement('li');
+                li.textContent = message;
+                messagesList.appendChild(li);
+            });
+        }
+
+        function fetchNewMessages() {
+            
+            var receivedMessage = document.getElementById('hidden-message').textContent;
+            console.log(messagesArray);
+            if(receivedMessage === messagesArray[-1]){
+                
+                messagesArray.push(receivedMessage);    
+                console.log(messagesArray);
+                updateMessageList();
+            }
+            
+            
+            location.reload();            
+        }
+
+        setInterval(fetchNewMessages, 3000);
+
+        fetchNewMessages();
+        
+    </script>
+</head>
+<body>
+    <h1>Quantum Guard Received Messages</h1>
+    {% csrf_token %}
+    <ul id="messages-list">
+        <!-- Messages will be displayed here -->
+    </ul>
+    
+
+    <div class="message-container" id="message-container">
+        <!-- Messages will be displayed here -->
+        <div id="hidden-message">{{ received_messages }}</div>
+    </div>
+</body>
+</html>
